@@ -26,6 +26,7 @@ type (
 	// Row and Header are attributes of IterResult iterator
 	Row    []any
 	Header []string
+    GbProcessed []float32
 
 	// Meta holds metadata
 	Meta struct {
@@ -37,6 +38,7 @@ type (
 	ResultStream interface {
 		Meta() *Meta
 		Header() Header
+		GbProcessed() GbProcessed
 		Next() (Row, error)
 		HasNext() bool
 		Close()

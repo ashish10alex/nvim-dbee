@@ -271,28 +271,32 @@ func (h *Handler) CallCancel(callID core.CallID) error {
 	return nil
 }
 
-func (h *Handler) CallDisplayResult(callID core.CallID, buffer nvim.Buffer, from, to int) (int, error) {
+
+
+func (h *Handler) CallDisplayResult(callID core.CallID, buffer nvim.Buffer, from, to int) (int, float32, error) {
 	call, ok := h.lookupCall[callID]
 	if !ok {
-		return 0, fmt.Errorf("unknown call with id: %q", callID)
+		return 0, 0., fmt.Errorf("unknown call with id: %q", callID)
 	}
 
 	res, err := call.GetResult()
 	if err != nil {
-		return 0, fmt.Errorf("call.GetResult: %w", err)
+		return 0, 0., fmt.Errorf("call.GetResult: %w", err)
 	}
 
 	text, err := res.Format(newTable(), from, to)
 	if err != nil {
-		return 0, fmt.Errorf("res.Format: %w", err)
+		return 0, 0., fmt.Errorf("res.Format: %w", err)
 	}
 
 	_, err = newBuffer(h.vim, buffer).Write(text)
 	if err != nil {
-		return 0, fmt.Errorf("buffer.Write: %w", err)
+		return 0, 0., fmt.Errorf("buffer.Write: %w", err)
 	}
+    fmt.Println("GbProcessed: ", res.GbProcessed())
+    return res.Len(), res.GbProcessedValue(), nil
 
-	return res.Len(), nil
+	// return res.Len(), nil
 }
 
 func (h *Handler) CallStoreResult(callID core.CallID, fmat, out string, from, to int, arg ...any) error {

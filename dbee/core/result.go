@@ -14,6 +14,7 @@ var ErrInvalidRange = func(from int, to int) error { return fmt.Errorf("invalid 
 // Result is the cached form of the ResultStream iterator
 type Result struct {
 	header Header
+    gbprocessed GbProcessed
 	meta   *Meta
 	rows   []Row
 
@@ -37,6 +38,7 @@ func (cr *Result) setIter(iter ResultStream, onFillStart func()) error {
 	}()
 
 	cr.header = iter.Header()
+    cr.gbprocessed = iter.GbProcessed()
 	cr.meta = iter.Meta()
 	cr.rows = []Row{}
 
@@ -77,6 +79,7 @@ func (cr *Result) Wipe() {
 
 	// clear everything
 	cr.header = Header{}
+    cr.gbprocessed = GbProcessed{}
 	cr.meta = &Meta{}
 	cr.rows = []Row{}
 	cr.isDrained = false
@@ -106,12 +109,21 @@ func (cr *Result) Len() int {
 	return len(cr.rows)
 }
 
+
 func (cr *Result) IsEmpty() bool {
 	return !cr.isFilled
 }
 
 func (cr *Result) Header() Header {
 	return cr.header
+}
+
+func (cr *Result) GbProcessed() GbProcessed {
+    return cr.gbprocessed
+}
+
+func (cr *Result) GbProcessedValue() float32 {
+    return cr.gbprocessed[0]
 }
 
 func (cr *Result) Meta() *Meta {

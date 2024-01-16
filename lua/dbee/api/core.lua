@@ -165,7 +165,7 @@ end
 ---@param bufnr integer
 ---@param from integer
 ---@param to integer
----@return integer total number of rows
+---@return { length: integer, gb_processed: integer}
 function core.call_display_result(id, bufnr, from, to)
   return entry.get_handler():call_display_result(id, bufnr, from, to)
 end

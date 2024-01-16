@@ -245,13 +245,19 @@ end
 ---@param bufnr integer
 ---@param from integer
 ---@param to integer
----@return integer # total number of rows
+---@return {} # total number of rows
 function Handler:call_display_result(id, bufnr, from, to)
-  local length = vim.fn.DbeeCallDisplayResult(id, { buffer = bufnr, from = from, to = to })
+  local output = vim.fn.DbeeCallDisplayResult(id, { buffer = bufnr, from = from, to = to })
+
+  local length = output[1]
+  local gb_processed = output[2]
+
+  print(vim.inspect("gb_processed: " .. gb_processed))
+  print(vim.inspect("length: " .. length))
   if not length or length == vim.NIL then
-    return 0
+    return {0, 0}
   end
-  return length
+  return output
 end
 
 ---@alias store_format "csv"|"json"|"table"

@@ -15,6 +15,7 @@ type ResultStream struct {
 	closes  []func()
 	meta    *core.Meta
 	header  core.Header
+    gbprocessed  core.GbProcessed
 	once    sync.Once
 }
 
@@ -28,6 +29,10 @@ func (r *ResultStream) Meta() *core.Meta {
 
 func (r *ResultStream) Header() core.Header {
 	return r.header
+}
+
+func (r *ResultStream) GbProcessed() core.GbProcessed {
+	return r.gbprocessed
 }
 
 func (r *ResultStream) HasNext() bool {
@@ -62,6 +67,7 @@ type ResultStreamBuilder struct {
 	next    func() (core.Row, error)
 	hasNext func() bool
 	header  core.Header
+	gbprocessed  core.GbProcessed
 	closes  []func()
 	meta    *core.Meta
 }
@@ -86,6 +92,11 @@ func (b *ResultStreamBuilder) WithHeader(header core.Header) *ResultStreamBuilde
 	return b
 }
 
+func (b *ResultStreamBuilder) WithGbProcessed(gbprocessed core.GbProcessed) *ResultStreamBuilder {
+	b.gbprocessed = gbprocessed
+	return b
+}
+
 func (b *ResultStreamBuilder) WithCloseFunc(fn func()) *ResultStreamBuilder {
 	b.closes = append(b.closes, fn)
 	return b
@@ -101,6 +112,7 @@ func (b *ResultStreamBuilder) Build() *ResultStream {
 		next:    b.next,
 		hasNext: b.hasNext,
 		header:  b.header,
+		gbprocessed:  b.gbprocessed,
 		closes:  b.closes,
 		meta:    b.meta,
 		once:    sync.Once{},

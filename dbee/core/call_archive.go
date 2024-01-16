@@ -161,6 +161,7 @@ func (a *archive) getResult() (*archiveRows, error) {
 type archiveRows struct {
 	id      CallID
 	header  Header
+	gbprocessed  GbProcessed
 	meta    *Meta
 	iter    func() (Row, error)
 	hasNext func() bool
@@ -204,6 +205,28 @@ func (r *archiveRows) readHeader() error {
 
 	return nil
 }
+
+
+func (r *archiveRows) readGbProcessed() error {
+	// gbprocessed
+	var gbprocessed GbProcessed
+	file, err := os.Open(headerFile(r.id))
+	if err != nil {
+		return fmt.Errorf("os.Open: %w", err)
+	}
+	defer file.Close()
+
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(&gbprocessed)
+	if err != nil {
+		return fmt.Errorf("decoder.Decode: %w", err)
+	}
+
+	r.gbprocessed = gbprocessed
+
+	return nil
+}
+
 
 func (r *archiveRows) readMeta() error {
 	// meta
@@ -350,6 +373,10 @@ func (r *archiveRows) Meta() *Meta {
 
 func (r *archiveRows) Header() Header {
 	return r.header
+}
+
+func (r *archiveRows) GbProcessed() GbProcessed {
+    return r.gbprocessed
 }
 
 func (r *archiveRows) Next() (Row, error) {

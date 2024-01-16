@@ -169,7 +169,9 @@ function ResultTile:display_result(page)
   local to = self.page_size * (page + 1)
 
   -- call go function
-  local length = self.handler:call_display_result(self.current_call.id, self.bufnr, from, to)
+  local output = self.handler:call_display_result(self.current_call.id, self.bufnr, from, to)
+  local length = output[1]
+  local gb_processed = output[2]
 
   -- adjust page ammount
   self.page_ammount = math.floor(length / self.page_size)
@@ -185,7 +187,7 @@ function ResultTile:display_result(page)
     vim.api.nvim_win_set_option(
       self.winid,
       "winbar",
-      string.format("%d/%d (%d)%%=Took %.3fs", page + 1, self.page_ammount + 1, length, seconds)
+      string.format("%d/%d (%d)%%=Took %.3fs and Processed %d GB", page + 1, self.page_ammount + 1, length, seconds, gb_processed)
     )
   end
 

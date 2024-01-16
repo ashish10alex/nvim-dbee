@@ -29,6 +29,20 @@ func (c *bigQueryDriver) Query(ctx context.Context, queryStr string) (core.Resul
 	query.MaxBytesBilled = c.maxBytesBilled
 	query.UseLegacySQL = c.useLegacySQL
 	query.Location = c.location
+    query.DryRun = true
+
+    job, err := query.Run(ctx)
+    if err != nil {
+        return nil, err
+    }
+    status := job.LastStatus()
+    if err := status.Err(); err != nil {
+        return nil, err
+    }
+    bytes_processed := status.Statistics.TotalBytesProcessed
+    data_processed_in_gb  :=  float32(bytes_processed) / 1e9
+    fmt.Printf("bytes processed in GB: %.3f ", data_processed_in_gb)
+    query.DryRun = false
 
 	iter, err := query.Read(ctx)
 	if err != nil {
@@ -70,7 +84,9 @@ func (c *bigQueryDriver) Query(ctx context.Context, queryStr string) (core.Resul
 	result := builders.NewResultStreamBuilder().
 		WithNextFunc(nextFn, hasNextFn).
 		WithHeader(header).
+        WithGbProcessed(core.GbProcessed{data_processed_in_gb}).
 		Build()
+    fmt.Println("result: ", result)
 	return result, nil
 }
 
@@ -148,6 +164,7 @@ func (c *bigQueryDriver) buildHeader(parentName string, schema bigquery.Schema) 
 		}
 	}
 
+    fmt.Println("columns: ", columns[0])
 	return columns
 }
 

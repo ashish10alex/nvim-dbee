@@ -21,6 +21,7 @@ end
 
 ---Toggle dbee UI.
 function dbee.toggle()
+  print("dbee.toggle() was called")
   entry.toggle_ui()
 end
 
@@ -59,6 +60,8 @@ end
 function dbee.execute(query)
   local handler = entry.get_handler()
   local result = entry.get_ui().result
+  print("dbee.execute() was called")
+  print(vim.inspect(result))
 
   local conn = handler:get_current_connection()
   if not conn then

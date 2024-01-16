@@ -108,6 +108,7 @@ function EditorTile:get_actions()
       end
       local call = self.handler:connection_execute(conn.id, query)
       self.result:set_call(call)
+      print(vim.inspect("run_selection was called: "))
     end,
   }
 end

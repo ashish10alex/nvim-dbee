@@ -182,7 +182,8 @@ func mountEndpoints(p *plugin.Plugin, h *handler.Handler) {
 			}
 		},
 		) (any, error) {
-			return h.CallDisplayResult(args.ID, nvim.Buffer(args.Opts.Buffer), args.Opts.From, args.Opts.To)
+            lenRes, gbProcessed, nil :=  h.CallDisplayResult(args.ID, nvim.Buffer(args.Opts.Buffer), args.Opts.From, args.Opts.To)
+            return []any{lenRes, gbProcessed}, nil
 		})
 
 	p.RegisterEndpoint(

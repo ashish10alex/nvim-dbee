@@ -30,6 +30,10 @@ func (mir *mockedResultStream) Header() Header {
 	return Header{"header1", "header2"}
 }
 
+func (mir *mockedResultStream) GbProcessed() GbProcessed {
+    return GbProcessed{1, 2}
+}
+
 func (mir *mockedResultStream) Next() (Row, error) {
 	if mir.current < mir.max {
 
